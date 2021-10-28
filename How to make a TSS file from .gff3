@@ -1,0 +1,44 @@
+## Read .gff3 file in R
+
+x <- read.delim("Glycine_max.Glycine_max_v2.1.51.gff3", header=F, comment.char="#")
+
+## Only coding genes
+
+x2 <- x[which(x$V3=="gene"),]
+
+## Check chr values to see if any non-numerical values are there
+
+head(x$V1)
+
+## If there are (like in soybean for example), you can exclude these rows
+# Soybeand has KZ..... values so to exclude these
+
+x3 <- x2[!grep(K, x2$V1),]
+
+## Now separate positive and negative strand genes
+
+# Positive
+x3_pos <- x3[which(x3$V7=="+"),]
+
+# Negative
+3_neg <- x3[which(x3$V7=="-"),]
+
+
+## Get rid of extra columns you don't need for bed file
+
+x3_pos2 <- x3_pos[c(1,4)]
+x3_neg2 <- x3_neg[c(1,5)]
+
+## Create a second column with the TSS info
+
+x3_pos3$V3 <- x3_pos3$V4
+
+## If you need to add "chr" to the beginning
+
+x3_pos2$chr <- paste("chr",x3_pos2$V1,sep="")
+x3_pos3 <- x3_pos2[c(4,3,2)]
+
+## Write out bed file
+
+write.table(x3_pos3, "glycine_max.genes.TSS.pos2.bed", col.names=FALSE, row.names=FALSE, quote=FALSE,sep="\t")
+
