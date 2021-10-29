@@ -13,7 +13,7 @@ head(x$V1)
 ## If there are (like in soybean for example), you can exclude these rows
 # Soybeand has KZ..... values so to exclude these
 
-x3 <- x2[!grep(K, x2$V1),]
+x3 <- x2[!grepl("KZ", x2$V1),]
 
 ## Now separate positive and negative strand genes
 
