@@ -42,3 +42,28 @@ x3_pos3 <- x3_pos2[c(4,3,2)]
 
 write.table(x3_pos3, "glycine_max.genes.TSS.pos2.bed", col.names=FALSE, row.names=FALSE, quote=FALSE,sep="\t")
 
+
+## Now to create one bed file for pos and neg genes
+
+# You have to make the column names the same for rbind to work
+colnames(sb_genes_pos2) <- c(1,2,3)
+colnames(sb_genes_neg2) <- c(1,2,3)
+
+new <- rbind(sb_genes_pos2, sb_genes_neg2)
+
+## Now we have to re-order the dataframe which requires some tinkering
+
+# Convert to dataframe and numeric
+df2 <- data.frame(apply(new, 2, function(x) as.numeric(as.character(x))))
+
+# Re order
+df3 <- df2[order(df2$X1,df2$X2),]
+
+## Write out
+
+write.table(df3, "glycinemax_genes_TSS.bed", col.names=FALSE, row.names=FALSE, quote=FALSE,sep="\t")
+
+
+
+
+
