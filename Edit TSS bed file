@@ -1,0 +1,28 @@
+## Got an error in deeptools saying my bed file was not a valid interval
+## This is because my TSS file I'm working with just has one point
+## So I need to give it a range of +1
+
+# Read in bed file
+pos <- as.data.frame(read.table("TAIR10_TSS_pos.bed", header=FALSE, sep="\t", stringsAsFactors=FALSE, quote=""))
+head(pos)
+    V1    V2    V3        V4 V5 V6
+1 Chr1  3631  3631 AT1G01010  0  +
+2 Chr1 23146 23146 AT1G01040  0  +
+3 Chr1 28500 28500 AT1G01046  0  +
+4 Chr1 44677 44677 AT1G01073  0  +
+5 Chr1 52239 52239 AT1G01110  0  +
+6 Chr1 56624 56624 AT1G01115  0  +
+
+# Replace V3 with TSS + 1
+pos$V3 <- paste(pos$V2+1)
+head(pos)
+    V1    V2    V3        V4 V5 V6
+1 Chr1  3631  3632 AT1G01010  0  +
+2 Chr1 23146 23147 AT1G01040  0  +
+3 Chr1 28500 28501 AT1G01046  0  +
+4 Chr1 44677 44678 AT1G01073  0  +
+5 Chr1 52239 52240 AT1G01110  0  +
+6 Chr1 56624 56625 AT1G01115  0  +
+
+# Bing bang boom
+write.table(pos, "TAIR10_TSS_pos_add1.bed",col.names=FALSE, row.names=FALSE, quote=FALSE,sep="\t")
