@@ -1,0 +1,56 @@
+########################################################################################################################################################
+## Convert BedGraph to BigWig
+########################################################################################################################################################
+
+## Remove header from bedGraph
+awk 'NR!=1' input.bedGraph > input.deheader.bedGraph
+
+# Sort
+sort -k1,1 -k2,2n unsorted.bedGraph > sorted.bedGraph
+
+# Fetch Chromosome Sizes file
+fetchChromSizes hg19 > hg19.chrom.sizes
+
+# Make sure there are only 4 columns
+awk '{print $1,$2,$3,$4}' NC-P-2.bedGraph_CpG.sort.bedGraph > NC-P-2.bedGraph_CpG.sort.4.bedGraph
+
+# Run bedGraphToBigWig
+bedGraphToBigWig input.sort.bedgraph chrome.sizes output.bw
+
+########################################################################################################################################################
+## Separate Strands in a Bam File
+########################################################################################################################################################
+
+samtools view -c -F 16 [BAM_FILE]
+samtools view -c -f 16 [BAM_FILE]
+
+# You can also do:
+samtools view -F 0x10 ${BAMF}  -o $BAM_F
+samtools view -f 0x10 ${BAMF} -o $BAM_R
+
+########################################################################################################################################################
+## Writing Loops for Aligning/Processing Multiple Files in a Directory
+########################################################################################################################################################
+
+# Make sure all files are in the same directory
+# Write outputs as $FILE.filetype
+
+for $FILE in *.bw; do [command] $FILE ; done
+
+########################################################################################################################################################
+## Adding/Removing "Chr" from BigWig File
+########################################################################################################################################################
+
+# load in file using samtools
+# sed -e 's/SN: [what you have]/ SN: [what you want]/'
+# reheader, write out
+
+samtools view -h pNETseq.unph.forward.merge.bam |sed -e 's/SN:1/SN:Chr1/' | sed -e 's/SN:2/SN:Chr2/' |\
+sed -e 's/SN:3/SN:Chr3/' | sed -e 's/SN:4/SN:Chr4/' |\
+sed -e 's/SN:5/SN:Chr5/' | samtools reheader - pNETseq.unph.forward.merge.bam > pNETseq.unph.forward.merge.chr.bam
+
+########################################################################################################################################################
+## Change File Extensions in Batch via Terminal
+########################################################################################################################################################
+
+for file in *.bed; do mv "$file" "${file%.bed}.tab"; done
